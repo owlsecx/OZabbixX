@@ -18,21 +18,20 @@
 
 ## 📌 Overview
 
-Offline monitoring-agent configuration auditor (Zabbix / NRPE / Icinga2 / Netdata)
+
+OZabbixX is an offline, read-only Zabbix server/proxy/agent configuration auditor that parses zabbix_server.conf, zabbix_proxy.conf and agent configs with stdlib-only parsers. It evaluates database credential exposure, encryption (PSK/cert TLSConnect/TLSAccept), remote-command and unsafe-parameter exposure, and management interface binding. Secrets are masked, findings are mapped to CWE and MITRE ATT&CK, and reports export to TXT, Markdown, JSON, CSV or SARIF.
 
 ---
 
 ## ✨ Features
 
-- Zabbix agent / agent2 — EnableRemoteCommands, AllowKey system.run[*], UnsafeUserParameters, UserParameter $1 shell injection, Server ACL width, TLSAccept/TLSConnect, PSK strength (masked), AllowRoot, LogRemoteCommands
-- Zabbix server / proxy — DBPassword (masked), DB TLS, proxy TLS, AlertScriptsPath / ExternalScripts perms, StatsAllowedIP, EnableGlobalScripts, Vault tokens
-- Zabbix frontend zabbix.conf.php — DB creds, DB TLS, default Admin / zabbix credential reminder
-- NRPE — dont_blame_nrpe, bash command substitution, allowed_hosts, ADH / no-SSL, $ARGn$ commands, root, sudo
-- Icinga2 — ApiUser permissions [*] / console, default passwords, accept_commands / accept_config, TicketSalt
-- Netdata — bind to *, allow-from ACLs, management API, registry, streaming API keys, run-as root, TLS
-- CWE + MITRE ATT&CK mapping, score / grade, --root discovery
-- Export TXT / Markdown / JSON / CSV / SARIF 2.1.0
-- Self-test --demo, CI gates --fail-on / --min-severity
+
+- Parsers for zabbix_server.conf, zabbix_proxy.conf and zabbix_agentd/agent2 configs
+- Database credential exposure (DBPassword masked) and DB-host/socket hardening checks
+- Encryption review: TLSConnect/TLSAccept, PSK vs cert, TLS PSK file permissions
+- Remote-command execution risk (EnableRemoteCommands, AllowKey/DenyKey, UnsafeUserParameters)
+- Management/listener exposure (ListenIP 0.0.0.0, Server/ServerActive trust) checks
+- Secrets masked, CWE+ATT&CK mapping and TXT/MD/JSON/CSV/SARIF export with --fail-on gating
 
 ---
 
@@ -45,8 +44,13 @@ Offline monitoring-agent configuration auditor (Zabbix / NRPE / Icinga2 / Netdat
 
 ## 🚀 Usage
 
+
 ```bash
-./OZabbixX
+./OZabbixX --scan -f sarif -o zabbix.sarif
+./OZabbixX --server /etc/zabbix/zabbix_server.conf --agent /etc/zabbix/zabbix_agentd.conf
+./OZabbixX -r /mnt/image --fail-on high --json
+./OZabbixX --demo
+./OZabbixX --help
 ```
 
 ---
